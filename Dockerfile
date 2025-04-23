@@ -1,46 +1,42 @@
-FROM pytorch/pytorch:2.0.1-cuda11.8-runtime
+FROM nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu22.04
 
-# 1. Instala dependencias necesarias
+# 1. Dependencias del sistema
 RUN apt-get update && apt-get install -y \
-    git git-lfs ffmpeg libgl1-mesa-glx python3-opencv \
-    openssh-server sudo \
- && git lfs install \
- && rm -rf /var/lib/apt/lists/*
+    git ffmpeg libgl1-mesa-glx python3-opencv \
+    openssh-server sudo python3-pip python3-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-# 2. Prepara SSH
+# 2. Instalar PyTorch manualmente
+RUN pip install --upgrade pip
+RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+
+# 3. Configurar usuario y SSH
+RUN useradd -m runpod && echo 'runpod ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 RUN mkdir /var/run/sshd
 
-# 3. Crea usuario con acceso sudo sin contraseña
-RUN useradd -m runpod && echo 'runpod ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-
-# 4. Prepara carpeta SSH y copia tu clave pública
-RUN mkdir -p /home/runpod/.ssh
+# 4. Copiar clave pública
 COPY keys/id_rsa.pub /home/runpod/.ssh/authorized_keys
 RUN chown -R runpod:runpod /home/runpod/.ssh \
     && chmod 700 /home/runpod/.ssh \
     && chmod 600 /home/runpod/.ssh/authorized_keys
 
-# 5. Configura SSH
+# 5. Configurar SSH seguro
 RUN sed -i 's/^#*Port .*/Port 2222/' /etc/ssh/sshd_config \
     && sed -i 's/^#*PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config \
-    && sed -i 's/^#*PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config \
-    && echo "PubkeyAuthentication yes" >> /etc/ssh/sshd_config
+    && sed -i 's/^#*PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
 
-# 6. Exponemos puertos necesarios
-EXPOSE 2222 7860
-
-# 7. Clona e instala Hunyuan Video
+# 6. Clonar e instalar Hunyuan
 WORKDIR /workspace
 RUN git clone https://github.com/Tencent/HunyuanVideo.git \
     && cd HunyuanVideo \
     && git submodule update --init --recursive \
-    && pip install --no-cache-dir -r requirements.txt
+    && pip install -r requirements.txt
 
-# 8. Copia y da permiso al script de entrada
+# 7. Entrypoint
 COPY entrypoint.sh /workspace/entrypoint.sh
 RUN chmod +x /workspace/entrypoint.sh
 
-ENTRYPOINT ["/workspace/entrypoint.sh"]
+# 8. Exponer puertos necesarios
+EXPOSE 2222 7860
 
-# 9. Opcional: línea para debug manual si no se usa entrypoint
-# CMD ["/usr/sbin/sshd", "-D"]
+ENTRYPOINT ["/workspace/entrypoint.sh"]
