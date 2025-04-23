@@ -4,15 +4,16 @@ FROM nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu22.04
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y \
     tzdata \
+    python3-pip \
     git ffmpeg libgl1-mesa-glx python3-opencv \
     openssh-server sudo \
     && ln -fs /usr/share/zoneinfo/Europe/Madrid /etc/localtime \
     && dpkg-reconfigure --frontend noninteractive tzdata \
+    && pip3 install --upgrade pip \
     && rm -rf /var/lib/apt/lists/*
 
 # 2. Instalar PyTorch manualmente
-RUN python3 -m ensurepip && python3 -m pip install --upgrade pip
-RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+RUN pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 
 # 3. Configurar usuario y SSH
 RUN useradd -m runpod && echo 'runpod ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
