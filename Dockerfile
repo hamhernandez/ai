@@ -1,9 +1,13 @@
 FROM nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu22.04
 
 # 1. Dependencias del sistema
+ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y \
+    tzdata \
     git ffmpeg libgl1-mesa-glx python3-opencv \
-    openssh-server sudo python3-pip python3-dev \
+    openssh-server sudo \
+    && ln -fs /usr/share/zoneinfo/Europe/Madrid /etc/localtime \
+    && dpkg-reconfigure --frontend noninteractive tzdata \
     && rm -rf /var/lib/apt/lists/*
 
 # 2. Instalar PyTorch manualmente
