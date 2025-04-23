@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # 2. Instalar PyTorch manualmente
-RUN pip install --upgrade pip
+RUN python3 -m ensurepip && python3 -m pip install --upgrade pip
 RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 
 # 3. Configurar usuario y SSH
