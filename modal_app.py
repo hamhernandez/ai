@@ -15,7 +15,7 @@ app = modal.App("hunyuan-video")
 volume = modal.Volume.from_name("hunyuan-storage", create_if_missing=True)
 
 # Endpoint web
-@modal.web_endpoint(method="POST")
+@modal.fastapi_endpoint(method="POST")
 @app.function(
     image=modal.Image.from_dockerfile("./Dockerfile", gpu="any", add_python="3.10"),
     gpu="any",
