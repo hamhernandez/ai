@@ -38,6 +38,6 @@ async def generate_endpoint(request: Request):
     return {"message": "Video en proceso", "output_path": output_path}
 
 # Vincular FastAPI con Modal
-@app.fastapi_endpoint()
+@modal.fastapi_endpoint()
 def serve():
     return web_app
