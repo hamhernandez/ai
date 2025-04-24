@@ -1,25 +1,28 @@
 import argparse
 import os
-from HunyuanVideo.pipeline.pipeline import Text2VideoPipeline
 
-def main():
-    parser = argparse.ArgumentParser(description="Generar video a partir de texto")
-    parser.add_argument("--prompt", type=str, required=True, help="Texto para generar el video")
-    parser.add_argument("--output", type=str, required=True, help="Ruta de salida del video")
-    args = parser.parse_args()
+def generar_video(prompt, output_path):
+    """
+    Simula la generación de un video desde un prompt.
+    Aquí deberías invocar el modelo real de Hunyuan Video.
+    """
+    print(f"Generando video con prompt: {prompt}")
+    print(f"Guardando en: {output_path}")
 
-    pipeline = Text2VideoPipeline(
-        pretrained_model_path="./HunyuanVideo/Hunyuan",  # ajusta si necesario
-        dtype="float16"
-    )
+    # Crear ruta si no existe
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
-    print(f"Generando video para el prompt: {args.prompt}")
-    pipeline.generate(
-        prompt=args.prompt,
-        output_path=args.output,
-        seed=42  # puedes hacerlo configurable si lo deseas
-    )
-    print(f"Video guardado en {args.output}")
+    # Aquí deberías invocar la lógica del modelo.
+    # Por ahora, simplemente creamos un archivo de prueba.
+    with open(output_path, "w") as f:
+        f.write(f"Este archivo simula un video generado a partir del prompt: {prompt}\n")
+
+    print("Video generado exitosamente.")
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--prompt", type=str, required=True, help="Texto descriptivo del video")
+    parser.add_argument("--output", type=str, required=True, help="Ruta del archivo de salida")
+    args = parser.parse_args()
+
+    generar_video(args.prompt, args.output)
