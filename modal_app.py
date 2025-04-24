@@ -12,7 +12,7 @@ image = modal.Image.from_dockerfile(
 app = modal.App("hunyuan-video")
 
 # Crear volumen persistente (si aún no lo tienes creado)
-volume = modal.SharedVolume().persist("hunyuan-storage")
+volume = modal.Volume.from_name("hunyuan-storage", create_if_missing=True)
 
 # Endpoint web
 @app.web_endpoint(method="POST")
