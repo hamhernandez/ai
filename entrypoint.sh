@@ -1,20 +1,24 @@
 #!/bin/bash
 
-echo "[+] Iniciando servidor SSH..."
-service ssh start
+set -e
 
-# Opcional: Verifica si los modelos están presentes
-# echo "[+] Verificando modelos..."
-# if [ ! -d "./HunyuanVideo/ckpts" ]; then
-#    echo "[+] Descargando modelos de Hugging Face..."
-#    cd /workspace/HunyuanVideo
-#    huggingface-cli download tencent/HunyuanVideo --local-dir ./ckpts
-# fi
+echo "[ENTRYPOINT] Comprobando pesos preentrenados..."
 
-echo "[+] Iniciando servidor de la API Gradio..."
-cd /workspace/HunyuanVideo
-python3 gradio_server.py --share &
-sleep 3
+MODEL_DIR="/workspace/HunyuanVideo/ckpts"
 
-echo "[+] HunyuanVideo listo en http://<tu-ip>:7860 o con tunel Gradio si activado."
-tail -f /dev/null
+if [ ! -d "$MODEL_DIR" ] || [ -z "$(ls -A $MODEL_DIR)" ]; then
+    echo "[ENTRYPOINT] Pesos no encontrados. Descargando desde Hugging Face..."
+    pip install "huggingface_hub[cli]"
+    huggingface-cli download tencent/HunyuanVideo --local-dir "$MODEL_DIR"
+else
+    echo "[ENTRYPOINT] Pesos encontrados en $MODEL_DIR"
+fi
+
+# Lanza tu aplicación o servicio
+echo "[ENTRYPOINT] Lanzando servidor o servicio principal..."
+# Ejemplo:
+# python3 app.py
+
+# Para dejar corriendo SSH (por ejemplo si solo quieres acceso)
+echo "[ENTRYPOINT] Lanzando SSH..."
+/usr/sbin/sshd -D

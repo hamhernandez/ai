@@ -30,12 +30,14 @@ RUN sed -i 's/^#*Port .*/Port 2222/' /etc/ssh/sshd_config \
     && sed -i 's/^#*PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config \
     && sed -i 's/^#*PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
 
-# 6. Clonar e instalar Hunyuan
+# 6. Clonar e instalar Hunyuan + descargar pesos pre-entrenados
 WORKDIR /workspace
 RUN git clone https://github.com/Tencent/HunyuanVideo.git \
     && cd HunyuanVideo \
     && git submodule update --init --recursive \
-    && pip install -r requirements.txt
+    && pip install -r requirements.txt \
+    && pip install "huggingface_hub[cli]" \
+    && huggingface-cli download tencent/HunyuanVideo --local-dir ./ckpts
 
 # 7. Entrypoint
 COPY entrypoint.sh /workspace/entrypoint.sh
