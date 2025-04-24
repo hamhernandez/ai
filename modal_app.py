@@ -15,13 +15,7 @@ app = modal.App("hunyuan-video")
 volume = modal.Volume.from_name("hunyuan-storage", create_if_missing=True)
 
 # Endpoint web
-@app.web_endpoint(method="POST")
-@app.function(
-    image=image,
-    gpu="any",
-    timeout=60 * 10,
-    volumes={"/root/out": volume},
-)
+@modal.web_endpoint(method="POST")
 def generate_video_web(request):
     """
     Endpoint que genera un video a partir de un prompt.
