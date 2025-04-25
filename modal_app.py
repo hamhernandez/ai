@@ -18,10 +18,10 @@ app = modal.App("hunyuan-video")
 volume = modal.Volume.from_name("hunyuan-storage", create_if_missing=True)
 
 # Funcion para generar el video
-@modal.function(
+@app.function(
         image=image,
         gpu="any",
-        volumes={"vol": volume},
+        volumes={"/vol": volume},
         timeout=60 * 10,
 )
 def generate_video(prompt: str):
