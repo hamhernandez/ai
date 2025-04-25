@@ -1,28 +1,29 @@
 import argparse
 import os
+from pathlib import Path
 
-def generar_video(prompt, output_path):
+def dummy_generate_video(prompt: str, output_path: str):
     """
-    Simula la generación de un video desde un prompt.
-    Aquí deberías invocar el modelo real de Hunyuan Video.
+    Esta función es un placeholder. Sustitúyela con la lógica real
+    de tu modelo HunYuan para generar el video.
     """
-    print(f"Generando video con prompt: {prompt}")
-    print(f"Guardando en: {output_path}")
+    print(f"Generando video para el prompt: '{prompt}'")
 
-    # Crear ruta si no existe
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    # Asegúrate de que el directorio de salida existe
+    Path(os.path.dirname(output_path)).mkdir(parents=True, exist_ok=True)
 
-    # Aquí deberías invocar la lógica del modelo.
-    # Por ahora, simplemente creamos un archivo de prueba.
-    with open(output_path, "w") as f:
-        f.write(f"Este archivo simula un video generado a partir del prompt: {prompt}\n")
+    # Crear un archivo de prueba simulado (1 segundo de video en negro con ffmpeg)
+    os.system(f"ffmpeg -f lavfi -i color=c=black:s=1280x720:d=1 -c:v libx264 -t 1 -pix_fmt yuv420p {output_path}")
 
-    print("Video generado exitosamente.")
+    print(f"Video generado en: {output_path}")
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--prompt", type=str, required=True, help="Texto descriptivo del video")
-    parser.add_argument("--output", type=str, required=True, help="Ruta del archivo de salida")
+    parser.add_argument("--prompt", required=True, help="Texto para generar el video")
+    parser.add_argument("--output", required=True, help="Ruta de salida del video")
     args = parser.parse_args()
 
-    generar_video(args.prompt, args.output)
+    dummy_generate_video(args.prompt, args.output)
+
+if __name__ == "__main__":
+    main()
